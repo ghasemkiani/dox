@@ -1,0 +1,29 @@
+{
+  "name": "@ghasemkiani/dox",
+  "version": "1.0.0",
+  "description": "A simple document processor",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/ghasemkiani/dox.git"
+  },
+  "keywords": [
+    "javascript",
+    "node",
+    "dom",
+    "builder"
+  ],
+  "author": "Ghasem Kiani",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://gitlab.com/ghasemkiani/dox/issues"
+  },
+  "homepage": "https://gitlab.com/ghasemkiani/dox#readme",
+  "dependencies": {
+    "@ghasemkiani/commonbase": "github:ghasemkiani/commonbase",
+    "@ghasemkiani/wdom": "gitlab:ghasemkiani/wdom"
+  }
+}
