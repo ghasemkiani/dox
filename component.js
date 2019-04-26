@@ -36,7 +36,7 @@ cutil.extend(CommentComponent.prototype, {
 
 class ElementComponent extends Component {
 	render(wnode, ctx, renderBody) {
-		wnode.cx(this.wnode.tag, this.wnode.ns, wnode => {
+		wnode.cx(this.wnode.name, this.wnode.ns, wnode => {
 			for(let k of this.wnode.node.getAttributeNames()) {
 				wnode.attr(k, this.wnode.attr(k));
 			}
