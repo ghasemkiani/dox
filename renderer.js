@@ -3,11 +3,15 @@
 const {cutil} = require("@ghasemkiani/commonbase/cutil");
 const {Base} = require("@ghasemkiani/commonbase/base");
 const {WDocument} = require("@ghasemkiani/wdom/document");
+const {Component, TextComponent, CommentComponent, ElementComponent} = require("@ghasemkiani/dox/component");
 
 class Renderer extends Base {
+	createWDocument() {
+		return new WDocument();
+	}
 	get wdocument() {
 		if(!this._wdocument) {
-			this._wdocument = new WDocument();
+			this._wdocument = this.createWDocument();
 		}
 		return this._wdocument;
 	}
@@ -15,29 +19,39 @@ class Renderer extends Base {
 		this._wdocument = wdocument;
 	}
 	render(wnode) {
-		return this.translate(wnode).render({
-			wnode: this.wdocument,
-			ctx: this.createContext(),
-		});
+		let render;
+		let renderBody;
+		render = (wnode1, wnode2, ctx) => {
+			let component = this.translate(wnode1);
+			component.render(wnode2, ctx, renderBody(wnode1, ctx));
+		};
+		renderBody = (wnode1, ctx) => {
+			ctx = Object.create(ctx);
+			return (wn2) => {
+				for(let wn1 of wnode1.wnodes) {
+					render(wn1, wn2, ctx);
+				}
+			};
+		};
+		let wnode1 = wnode;
+		let wnode2 = this.wdocument.root.cl();
+		let ctx = this.createContext();
+		return render(wnode1, wnode2, ctx);
+	}
+	getComponent(wnode) {
+		return (
+			wnode.kind === "text" ? TextComponent :
+			wnode.kind === "comment" ? CommentComponent :
+			wnode.kind === "element" ?
+				wnode.ns in this.translator && wnode.tag in this.translator[wnode.ns] ?
+					this.translator[wnode.ns][wnode.tag] :
+					ElementComponent
+			: Component
+		);
 	}
 	translate(wnode) {
-		let component;
-		if(wnode.kind === "element") {
-			let Component = this.translator[wnode.ns][wnode.tag];
-			component = new Component({wnode});
-			for(let k of wnode.node.getAttributeNames()) {
-				let v = wnode.attr(k);
-				component.attr(k, v);
-			}
-			for(let wn of wnode.wnodes) {
-				component.append(this.translate(wn));
-			}
-		} else if(wnode.kind === "text") {
-			component = this.wdocument.t(wnode.text);
-		} else if(wnode.kind === "comment") {
-			component = this.wdocument.comment(wnode.text);
-		}
-		return component;
+		let Component = this.getComponent(wnode);
+		return new Component({wnode});
 	}
 	createContext() {
 		return {};

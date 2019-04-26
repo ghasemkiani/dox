@@ -1,36 +1,56 @@
 //	@ghasemkiani/dox/component
 
 const {cutil} = require("@ghasemkiani/commonbase/cutil");
-const {WElement} = require("@ghasemkiani/wdom/element");
+const {Base} = require("@ghasemkiani/commonbase/base");
 
-class Component extends WElement {
-	render(wnode, ctx) {
+class Component extends Base {
+	render(wnode, ctx, renderBody) {
 		//
-	}
-	renderBody(wnode, ctx) {
-		ctx = this.createContext(ctx);
-		return this.wnodes.map(wnode => {
-			let wn;
-			if(wnode.kind === "element") {
-				wn = wnode.render(wnode, ctx);
-			} else if(wnode.kind === "text") {
-				if(ctx.renderText) {
-					wn = ctx.renderText(wnode);
-				} else {
-					wn = wnode.wdocument.t(wnode.text);
-				}
-			} else if(wnode.kind === "comment") {
-				wn = wnode.wdocument.comment(wnode.text);
-			}
-			return wn;
-		});
-	}
-	createContext(ctx) {
-		return Object.create(ctx);
 	}
 }
 cutil.extend(Component.prototype, {
 	//
 });
 
-module.exports = {Component};
+class TextComponent extends Component {
+	render(wnode, ctx, renderBody) {
+		if(ctx.renderText) {
+			ctx.renderText(this.wnode.text, wnode);
+		} else {
+			wnode.t(this.wnode.text);
+		}
+	}
+}
+cutil.extend(TextComponent.prototype, {
+	//
+});
+
+class CommentComponent extends Component {
+	render(wnode, ctx, renderBody) {
+		wnode.comment(this.wnode.text);
+	}
+}
+cutil.extend(CommentComponent.prototype, {
+	//
+});
+
+class ElementComponent extends Component {
+	render(wnode, ctx, renderBody) {
+		wnode.cx(this.wnode.tag, this.wnode.ns, wnode => {
+			for(let k of this.wnode.node.getAttributeNames()) {
+				wnode.attr(k, this.wnode.attr(k));
+			}
+			renderBody(wnode);
+		});
+	}
+}
+cutil.extend(ElementComponent.prototype, {
+	//
+});
+
+module.exports = {
+	Component,
+	TextComponent,
+	CommentComponent,
+	ElementComponent,
+};
