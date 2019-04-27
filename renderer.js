@@ -21,9 +21,10 @@ class Renderer extends Base {
 	render(wnode) {
 		let render;
 		let renderBody;
+		let renderAgain;
 		render = (wnode1, wnode2, ctx) => {
 			let component = this.translate(wnode1);
-			component.render(wnode2, ctx, renderBody(wnode1, ctx));
+			component.render(wnode2, ctx, renderBody(wnode1, ctx), renderAgain(ctx));
 		};
 		renderBody = (wnode1, ctx) => {
 			ctx = Object.create(ctx);
@@ -33,10 +34,16 @@ class Renderer extends Base {
 				}
 			};
 		};
+		renderAgain = (ctx) => {
+			ctx = Object.create(ctx);
+			return (wnode1, wnode2) => {
+				render(wnode1, wnode2, ctx);
+			};
+		};
 		let wnode1 = wnode;
 		let wnode2 = this.wdocument.root.cl();
 		let ctx = this.createContext();
-		return render(wnode1, wnode2, ctx);
+		render(wnode1, wnode2, ctx);
 	}
 	getComponent(wnode) {
 		return (

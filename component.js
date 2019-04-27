@@ -4,12 +4,15 @@ const {cutil} = require("@ghasemkiani/commonbase/cutil");
 const {Base} = require("@ghasemkiani/commonbase/base");
 
 class Component extends Base {
+	get wdocument() {
+		return this.wnode.wdocument;
+	}
 	render(wnode, ctx, renderBody) {
 		//
 	}
 }
 cutil.extend(Component.prototype, {
-	//
+	wnode: null,
 });
 
 class TextComponent extends Component {
@@ -35,7 +38,7 @@ cutil.extend(CommentComponent.prototype, {
 });
 
 class ElementComponent extends Component {
-	render(wnode, ctx, renderBody) {
+	render(wnode, ctx, renderBody, renderAgain) {
 		wnode.cx(this.wnode.name, this.wnode.ns, wnode => {
 			for(let k of this.wnode.node.getAttributeNames()) {
 				wnode.attr(k, this.wnode.attr(k));
