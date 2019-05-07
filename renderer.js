@@ -50,7 +50,7 @@ class Renderer extends Base {
 			wnode.kind === "text" ? TextComponent :
 			wnode.kind === "comment" ? CommentComponent :
 			wnode.kind === "element" ?
-				wnode.ns in this.translator && wnode.name in this.translator[wnode.ns] ?
+				this.translator && wnode.ns in this.translator && wnode.name in this.translator[wnode.ns] ?
 					this.translator[wnode.ns][wnode.name] :
 					ElementComponent
 			: Component
