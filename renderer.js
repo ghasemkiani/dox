@@ -36,9 +36,9 @@ class Renderer extends Base {
 		};
 		renderAgain = (ctx) => {
 			ctx = Object.create(ctx);
-			return (wnode2) => {
-				let wnode1 = wnode2.parent;
-				wnode2.del();
+			return (wnode1) => {
+				let wnode2 = wnode1.parent;
+				wnode1.del();
 				render(wnode1, wnode2, ctx);
 			};
 		};
