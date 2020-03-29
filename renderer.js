@@ -4,6 +4,7 @@ const {cutil} = require("@ghasemkiani/commonbase/cutil");
 const {Base} = require("@ghasemkiani/commonbase/base");
 const {WDocument} = require("@ghasemkiani/wdom/document");
 const {Component, TextComponent, CommentComponent, ElementComponent} = require("@ghasemkiani/dox/component");
+const {Context} = require("@ghasemkiani/dox/context");
 
 class Renderer extends Base {
 	createWDocument() {
@@ -24,6 +25,8 @@ class Renderer extends Base {
 		let renderAgain;
 		render = (wnode1, wnode2, ctx) => {
 			let component = this.translate(wnode1);
+			ctx.component = component;
+			component.context = ctx;
 			component.render(wnode2, ctx, renderBody(wnode1, ctx), renderAgain(ctx));
 		};
 		renderBody = (wnode1, ctx) => {
@@ -62,13 +65,24 @@ class Renderer extends Base {
 		let Component = this.getComponent(wnode);
 		return new Component({wnode});
 	}
+	get Context() {
+		if(!this._Context) {
+			this._Context = Context;
+		}
+		return this._Context;
+	}
+	set Context(Context) {
+		this._Context = Context;
+	}
 	createContext() {
-		return {};
+		let renderer = this;
+		return new this.Context({renderer});
 	}
 }
 cutil.extend(Renderer.prototype, {
 	translator: null,
 	_wdocument: null,
+	_Context: null,
 });
 
 module.exports = {Renderer};
