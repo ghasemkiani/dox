@@ -20,35 +20,9 @@ class Renderer extends Base {
 		this._wdocument = wdocument;
 	}
 	render(wnode) {
-		let render;
-		let renderBody;
-		let renderAgain;
-		render = (wnode1, wnode2, ctx) => {
-			let component = this.translate(wnode1);
-			ctx.component = component;
-			component.context = ctx;
-			component.render(wnode2, ctx, renderBody(wnode1, ctx), renderAgain(ctx));
-		};
-		renderBody = (wnode1, ctx) => {
-			ctx = Object.create(ctx);
-			return (wn2) => {
-				for(let wn1 of wnode1.wnodes) {
-					render(wn1, wn2, ctx);
-				}
-			};
-		};
-		renderAgain = (ctx) => {
-			ctx = Object.create(ctx);
-			return (wnode1) => {
-				let wnode2 = wnode1.parent;
-				wnode1.del();
-				render(wnode1, wnode2, ctx);
-			};
-		};
-		let wnode1 = wnode;
-		let wnode2 = this.wdocument.root.cl();
-		let ctx = this.createContext();
-		render(wnode1, wnode2, ctx);
+		let context = this.createContext();
+		let component = this.translate(wnode, context);
+		component.render(this.wdocument.root.cl());
 	}
 	getComponent(wnode) {
 		return (
@@ -61,9 +35,11 @@ class Renderer extends Base {
 			: Component
 		);
 	}
-	translate(wnode) {
+	translate(wnode, context) {
 		let Component = this.getComponent(wnode);
-		return new Component({wnode});
+		let component = new Component({wnode, context});
+		context.component = component;
+		return component;
 	}
 	get Context() {
 		if(!this._Context) {
