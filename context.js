@@ -5,8 +5,15 @@ const {cutil} = require("@ghasemkiani/commonbase/cutil");
 const {pubsub} = require("@ghasemkiani/base-utils/pubsub");
 
 class Context extends cutil.mixin(Base, pubsub) {
+	constructor(...args) {
+		super(...args);
+		this.root = this;
+	}
 	get parent() {
 		return Object.getPrototypeOf(this);
+	}
+	renderText(text, wnode) {
+		wnode.t(text);
 	}
 }
 
