@@ -23,6 +23,7 @@ class Renderer extends Base {
 		let context = this.createContext();
 		let component = this.translate(wnode, context);
 		component.render(this.wdocument.root.cl());
+		return context;
 	}
 	getComponent(wnode) {
 		return (

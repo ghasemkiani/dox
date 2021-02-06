@@ -11,14 +11,20 @@ class Component extends cutil.mixin(Base, pubsub) {
 	render(wnode) {
 		//
 	}
-	renderBody(wnode) {
+	renderBody(wnode, f) {
 		let ctx = this.context.createChild();
+		if(typeof f === "function") {
+			f(ctx);
+		}
 		for(let wn of this.wnode.wnodes) {
 			this.context.renderer.translate(wn, ctx).render(wnode);
 		}
 	}
-	renderAgain(wn, wnode) {
+	renderAgain(wn, wnode, f) {
 		let ctx = this.context.createChild();
+		if(typeof f === "function") {
+			f(ctx);
+		}
 		if(!wnode) {
 			wnode = wn.parent;
 			wn.del();

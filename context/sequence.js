@@ -2,17 +2,49 @@
 
 const {cutil} = require("@ghasemkiani/commonbase/cutil");
 const {Base} = require("@ghasemkiani/commonbase/base");
-const {Item} = require("@ghasemkiani/dox/context/item");
+
+class Item extends Base {
+	constructor(...args) {
+		super(...args);
+		if (!this.nonum) {
+			if (cutil.isNil(this.num)) {
+				this.num = ++this.sequence.num;
+			} else {
+				if (cutil.isNumber(this.num)) {
+					this.sequence.num = this.num;
+				}
+			}
+		}
+	}
+	get id() {
+		if(!this._id) {
+			this._id = `${this.sequence.tag}${this.nonum ? "_" + cutil.srand(6) : cutil.strn(this.num, 3)}`;
+		}
+		return this._id;
+	}
+	set id(id) {
+		this._id = id;
+	}
+	get index() {
+		return this.sequence.items.indexOf(this);
+	}
+}
+cutil.extend(Item.prototype, {
+	_id: null,
+	sequence: null,
+	nonum: false,
+	num: null,
+});
 
 class Sequence extends Base {
 	get items() {
-		if(!this._idMap) {
-			this._idMap = [];
+		if(!this._items) {
+			this._items = [];
 		}
-		return this._idMap;
+		return this._items;
 	}
 	set items(items) {
-		this._idMap = items;
+		this._items = items;
 	}
 	get idMap() {
 		if(!this._idMap) {
@@ -22,6 +54,9 @@ class Sequence extends Base {
 	}
 	set idMap(idMap) {
 		this._idMap = idMap;
+	}
+	get first() {
+		return this.items[0] || null;
 	}
 	get last() {
 		return this.items[this.items.length - 1] || null;
@@ -41,7 +76,7 @@ class Sequence extends Base {
 		return item;
 	}
 	setNonum() {
-		if(this.las) {
+		if(this.last) {
 			this.num--;
 			delete this.last.num;
 			this.last.nonum = true;
@@ -76,6 +111,8 @@ cutil.extend(Sequence.prototype, {
 	_items : null,
 	num : 0,
 	_idMap : null,
+	parent: null,
+	level: 0,
 });
 
-module.exports = {Sequence};
+module.exports = {Item, Sequence};
