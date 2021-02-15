@@ -2,11 +2,12 @@
 
 const {cutil} = require("@ghasemkiani/commonbase/cutil");
 const {Base} = require("@ghasemkiani/commonbase/base");
+const {pubsub} = require("@ghasemkiani/base-utils/pubsub");
 const {WDocument} = require("@ghasemkiani/wdom/document");
 const {Component, TextComponent, CommentComponent, ElementComponent} = require("@ghasemkiani/dox/component");
 const {Context} = require("@ghasemkiani/dox/context");
 
-class Renderer extends Base {
+class Renderer extends cutil.mixin(Base, pubsub) {
 	createWDocument() {
 		return new WDocument();
 	}
@@ -21,6 +22,7 @@ class Renderer extends Base {
 	}
 	render(wnode) {
 		let context = this.createContext();
+		this.setupContext(context);
 		let component = this.translate(wnode, context);
 		component.render(this.wdocument.root.cl());
 		return context;
@@ -54,6 +56,9 @@ class Renderer extends Base {
 	createContext() {
 		let renderer = this;
 		return new this.Context({renderer});
+	}
+	setupContext(context) {
+		//
 	}
 }
 cutil.extend(Renderer.prototype, {

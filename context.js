@@ -1,7 +1,7 @@
 //	@ghasemkiani/dox/context
 
-const {Base} = require("@ghasemkiani/commonbase/base");
 const {cutil} = require("@ghasemkiani/commonbase/cutil");
+const {Base} = require("@ghasemkiani/commonbase/base");
 const {pubsub} = require("@ghasemkiani/base-utils/pubsub");
 
 class Context extends cutil.mixin(Base, pubsub) {
@@ -15,7 +15,7 @@ class Context extends cutil.mixin(Base, pubsub) {
 	createChild() {
 		return Object.create(this);
 	}
-	renderText(text, wnode) {
+	renderText(wnode, text) {
 		wnode.t(text);
 	}
 }

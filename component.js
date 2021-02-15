@@ -39,7 +39,7 @@ cutil.extend(Component.prototype, {
 class TextComponent extends Component {
 	render(wnode) {
 		if(this.context.renderText) {
-			this.context.renderText(this.wnode.text, wnode);
+			this.context.renderText(wnode, this.wnode.text);
 		} else {
 			wnode.t(this.wnode.text);
 		}
