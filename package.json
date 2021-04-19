@@ -1,6 +1,6 @@
 {
   "name": "@ghasemkiani/dox",
-  "version": "1.9.1",
+  "version": "1.10.0",
   "description": "A simple document processor",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
   "homepage": "https://gitlab.com/ghasemkiani/dox#readme",
   "dependencies": {
     "@ghasemkiani/base-utils": "gitlab:ghasemkiani/base-utils",
-    "@ghasemkiani/commonbase": "github:ghasemkiani/commonbase",
+    "@ghasemkiani/base": "github:ghasemkiani/base",
     "@ghasemkiani/wdom": "gitlab:ghasemkiani/wdom"
   }
 }

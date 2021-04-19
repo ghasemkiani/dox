@@ -1,7 +1,7 @@
 //	@ghasemkiani/dox/renderer
 
-const {cutil} = require("@ghasemkiani/commonbase/cutil");
-const {Base} = require("@ghasemkiani/commonbase/base");
+const {cutil} = require("@ghasemkiani/base/cutil");
+const {Obj: Base} = require("@ghasemkiani/base/obj");
 const {pubsub} = require("@ghasemkiani/base-utils/pubsub");
 const {WDocument} = require("@ghasemkiani/wdom/document");
 const {Component, TextComponent, CommentComponent, ElementComponent} = require("@ghasemkiani/dox/component");

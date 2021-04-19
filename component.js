@@ -1,7 +1,7 @@
 //	@ghasemkiani/dox/component
 
-const {cutil} = require("@ghasemkiani/commonbase/cutil");
-const {Base} = require("@ghasemkiani/commonbase/base");
+const {cutil} = require("@ghasemkiani/base/cutil");
+const {Obj: Base} = require("@ghasemkiani/base/obj");
 const {pubsub} = require("@ghasemkiani/base-utils/pubsub");
 
 class Component extends cutil.mixin(Base, pubsub) {
