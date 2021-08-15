@@ -1,6 +1,6 @@
 {
   "name": "@ghasemkiani/dox",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A simple document processor",
   "type": "module",
   "main": "index.js",
@@ -14,8 +14,10 @@
   "keywords": [
     "javascript",
     "node",
-    "dom",
-    "builder"
+    "xml",
+    "html",
+    "document",
+    "processor"
   ],
   "author": "Ghasem Kiani",
   "license": "MIT",
