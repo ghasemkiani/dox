@@ -1,10 +1,10 @@
 //	@ghasemkiani/dox/component
 
-const {cutil} = require("@ghasemkiani/base/cutil");
-const {Obj: Base} = require("@ghasemkiani/base/obj");
-const {pubsub} = require("@ghasemkiani/base-utils/pubsub");
+import {cutil} from "@ghasemkiani/base";
+import {Obj} from "@ghasemkiani/base";
+import {pubsub} from "@ghasemkiani/base-utils";
 
-class Component extends cutil.mixin(Base, pubsub) {
+class Component extends cutil.mixin(Obj, pubsub) {
 	get wdocument() {
 		return this.wnode.wdocument;
 	}
@@ -72,9 +72,4 @@ cutil.extend(ElementComponent.prototype, {
 	//
 });
 
-module.exports = {
-	Component,
-	TextComponent,
-	CommentComponent,
-	ElementComponent,
-};
+export {Component, TextComponent, CommentComponent, ElementComponent};

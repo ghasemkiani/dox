@@ -1,13 +1,13 @@
 //	@ghasemkiani/dox/renderer
 
-const {cutil} = require("@ghasemkiani/base/cutil");
-const {Obj: Base} = require("@ghasemkiani/base/obj");
-const {pubsub} = require("@ghasemkiani/base-utils/pubsub");
-const {WDocument} = require("@ghasemkiani/wdom/document");
-const {Component, TextComponent, CommentComponent, ElementComponent} = require("@ghasemkiani/dox/component");
-const {Context} = require("@ghasemkiani/dox/context");
+import {cutil} from "@ghasemkiani/base";
+import {Obj} from "@ghasemkiani/base";
+import {pubsub} from "@ghasemkiani/base-utils";
+import {WDocument} from "@ghasemkiani/wdom";
+import {Component, TextComponent, CommentComponent, ElementComponent} from "./component.js";
+import {Context} from "./context.js";
 
-class Renderer extends cutil.mixin(Base, pubsub) {
+class Renderer extends cutil.mixin(Obj, pubsub) {
 	createWDocument() {
 		return new WDocument();
 	}
@@ -75,4 +75,4 @@ cutil.extend(Renderer.prototype, {
 	_Context: null,
 });
 
-module.exports = {Renderer};
+export {Renderer};

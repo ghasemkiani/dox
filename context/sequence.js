@@ -1,7 +1,7 @@
 //	@ghasemkiani/dox/context/sequence
 
-const {cutil} = require("@ghasemkiani/base/cutil");
-const {Obj: Base} = require("@ghasemkiani/base/obj");
+import {cutil} from "@ghasemkiani/base";
+import {Obj as Base} from "@ghasemkiani/base";
 
 class Item extends Base {
 	constructor(...args) {
