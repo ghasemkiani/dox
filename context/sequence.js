@@ -116,4 +116,4 @@ cutil.extend(Sequence.prototype, {
 	level: 0,
 });
 
-module.exports = {Item, Sequence};
+export {Item, Sequence};
