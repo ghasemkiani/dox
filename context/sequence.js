@@ -18,7 +18,7 @@ class Item extends Base {
 	}
 	get id() {
 		if(!this._id) {
-			this._id = `${this.sequence.tag}${this.nonum ? "_" + cutil.srand(6) : cutil.asNumber(this.num).toFixed(0).padStart(3, "0")}`;
+			this._id = `${this.sequence.tag}${this.nonum ? "_" + cutil.srand(6) : cutil.asNumber(this.num).toFixed(0).padStart(this.sequence.idPadLength, "0")}`;
 		}
 		return this._id;
 	}
@@ -114,6 +114,7 @@ cutil.extend(Sequence.prototype, {
 	_idMap : null,
 	parent: null,
 	level: 0,
+	idPadLength: 3,
 });
 
 export {Item, Sequence};
