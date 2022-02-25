@@ -24,7 +24,7 @@ class Renderer extends cutil.mixin(Obj, pubsub) {
 		let context = this.createContext();
 		this.setupContext(context);
 		let component = this.translate(wnode, context);
-		component.render(this.wdocument.root.cl());
+		component.render(this.wdocument ? this.wdocument.root.cl() : null);
 		// this.iter();
 		return context;
 	}
