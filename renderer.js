@@ -29,11 +29,13 @@ class Renderer extends cutil.mixin(Obj, pubsub) {
 		return context;
 	}
 	iter() {
+		this.pub("iter-start");
 		this.pub("iter1");
 		this.pub("iter2");
 		this.pub("iter3");
 		this.pub("iter4");
 		this.pub("iter5");
+		this.pub("iter-finish");
 	}
 	getComponent(wnode) {
 		return (
