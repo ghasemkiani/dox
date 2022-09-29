@@ -44,9 +44,12 @@ class Renderer extends cutil.mixin(Obj, pubsub) {
 			wnode.kind === "element" ?
 				this.translator && wnode.ns in this.translator && wnode.name in this.translator[wnode.ns] ?
 					this.translator[wnode.ns][wnode.name] :
-					ElementComponent
+					this.getElementComponent(wnode)
 			: Component
 		);
+	}
+	getElementComponent(wnode) {
+		return ElementComponent;
 	}
 	translate(wnode, context) {
 		let Component = this.getComponent(wnode);
