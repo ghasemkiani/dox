@@ -8,6 +8,14 @@ import {Component, TextComponent, CommentComponent, ElementComponent} from "./co
 import {Context} from "./context.js";
 
 class Renderer extends cutil.mixin(Obj, pubsub) {
+	static {
+		cutil.extend(this.prototype, {
+			translator: null,
+			_wdocument: null,
+			_Context: null,
+			_wnodeRoot: null,
+		});
+	}
 	createWDocument() {
 		return new WDocument();
 	}
@@ -20,11 +28,17 @@ class Renderer extends cutil.mixin(Obj, pubsub) {
 	set wdocument(wdocument) {
 		this._wdocument = wdocument;
 	}
+	get wnodeRoot() {
+		return this._wnodeRoot || (this.wdocument ? this.wdocument.root.cl() : null);
+	}
+	set wnodeRoot(wnodeRoot) {
+		this._wnodeRoot = wnodeRoot;
+	}
 	render(wnode) {
 		let context = this.createContext();
 		this.setupContext(context);
 		let component = this.translate(wnode, context);
-		component.render(this.wdocument ? this.wdocument.root.cl() : null);
+		component.render(this.wnodeRoot);
 		// this.iter();
 		return context;
 	}
@@ -68,16 +82,13 @@ class Renderer extends cutil.mixin(Obj, pubsub) {
 	}
 	createContext() {
 		let renderer = this;
-		return new this.Context({renderer});
+		let {Context} = renderer;
+		let context = new Context({renderer});
+		return context;
 	}
 	setupContext(context) {
 		//
 	}
 }
-cutil.extend(Renderer.prototype, {
-	translator: null,
-	_wdocument: null,
-	_Context: null,
-});
 
 export {Renderer};
