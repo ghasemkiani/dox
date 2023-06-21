@@ -5,6 +5,11 @@ import {Obj} from "@ghasemkiani/base";
 import {pubsub} from "@ghasemkiani/base-utils";
 
 class Component extends cutil.mixin(Obj, pubsub) {
+	static {
+		cutil.extend(this.prototype, {
+			wnode: null,
+		});
+	}
 	get wdocument() {
 		return this.wnode.wdocument;
 	}
@@ -32,11 +37,13 @@ class Component extends cutil.mixin(Obj, pubsub) {
 		this.context.renderer.translate(wn, ctx).render(wnode);
 	}
 }
-cutil.extend(Component.prototype, {
-	wnode: null,
-});
 
 class TextComponent extends Component {
+	static {
+		cutil.extend(this.prototype, {
+			//
+		});
+	}
 	render(wnode) {
 		if(this.context.renderText) {
 			this.context.renderText(wnode, this.wnode.text);
@@ -45,20 +52,24 @@ class TextComponent extends Component {
 		}
 	}
 }
-cutil.extend(TextComponent.prototype, {
-	//
-});
 
 class CommentComponent extends Component {
+	static {
+		cutil.extend(this.prototype, {
+			//
+		});
+	}
 	render(wnode) {
 		wnode.comment(this.wnode.text);
 	}
 }
-cutil.extend(CommentComponent.prototype, {
-	//
-});
 
 class ElementComponent extends Component {
+	static {
+		cutil.extend(this.prototype, {
+			//
+		});
+	}
 	render(wnode) {
 		wnode.cx(this.wnode.name, this.wnode.ns, wnode => {
 			for(let k of this.wnode.node.getAttributeNames()) {
@@ -68,8 +79,35 @@ class ElementComponent extends Component {
 		});
 	}
 }
-cutil.extend(ElementComponent.prototype, {
-	//
-});
 
-export {Component, TextComponent, CommentComponent, ElementComponent};
+class TemplateComponent extends Component {
+	static {
+		cutil.extend(this.prototype, {
+			template: null,
+			props: null,
+		});
+	}
+	render(wnode) {
+		let component = this;
+		let {template} = component;
+		let {context} = component;
+		let {renderer} = context;
+		
+		context.component = component;
+		
+		let cmp = renderer.translate(template, context);
+		component.props = {};
+		for (let {name, value} of component.wnode.attrs()) {
+			if (/^{/.test(value)) {
+				let f = new Function("wnode", `return (${value});`);
+				value = f.call(cmp, wnode);
+			}
+			component.props[name] = value;
+		}
+		cmp.render(wnode);
+		
+		delete context.component;
+	}
+}
+
+export {Component, TextComponent, CommentComponent, ElementComponent, TemplateComponent};
