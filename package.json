@@ -1,6 +1,6 @@
 {
 	"name": "@ghasemkiani/dox",
-	"version": "2.2.3",
+	"version": "2.2.4",
 	"description": "A simple document processor",
 	"type": "module",
 	"main": "index.js",

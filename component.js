@@ -93,20 +93,24 @@ class TemplateComponent extends Component {
 		let {context} = component;
 		let {renderer} = context;
 		
-		context.component = component;
+		context.templateComponent = component;
 		
 		let cmp = renderer.translate(template, context);
 		component.props = {};
 		for (let {name, value} of component.wnode.attrs()) {
 			if (/^{/.test(value)) {
-				let f = new Function("wnode", `return (${value});`);
-				value = f.call(cmp, wnode);
+				let f = new Function("wnode", "component", "context", "renderer", `return (${value});`);
+				value = f.call(cmp, wnode, cmp, context, renderer);
 			}
-			component.props[name] = value;
+			if (name === "wnode") {
+				wnode = value;
+			} else {
+				component.props[name] = value;
+			}
 		}
 		cmp.render(wnode);
 		
-		delete context.component;
+		delete context.templateComponent;
 	}
 }
 

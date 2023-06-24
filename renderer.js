@@ -1,10 +1,13 @@
 //	@ghasemkiani/dox/renderer
 
+import path from "node:path";
+import fs from "node:fs";
+
 import {cutil} from "@ghasemkiani/base";
 import {Obj} from "@ghasemkiani/base";
 import {pubsub} from "@ghasemkiani/base-utils";
 import {WDocument} from "@ghasemkiani/wdom";
-import {Component, TextComponent, CommentComponent, ElementComponent} from "./component.js";
+import {Component, TextComponent, CommentComponent, ElementComponent, TemplateComponent} from "./component.js";
 import {Context} from "./context.js";
 
 class Renderer extends cutil.mixin(Obj, pubsub) {
@@ -88,6 +91,34 @@ class Renderer extends cutil.mixin(Obj, pubsub) {
 	}
 	setupContext(context) {
 		//
+	}
+	addTemplateFolder(folder, ns) {
+		let renderer = this;
+		let {wdocument} = renderer;
+		function dir(folder, prefix) {
+			for (let dirent of fs.readdirSync(folder, {withFileTypes: true})) {
+				let fn = path.join(dirent.path, dirent.name);
+				let tag = prefix + path.parse(dirent.name).name;
+				if (dirent.isDirectory()) {
+					dir(fn, tag + ".");
+				} else if (dirent.isFile() && /\.dox/i.test(fn)) {
+					console.log(`${tag.padEnd(32)}\t${fn}`);
+					let text = fs.readFileSync(fn, "UTF-8");
+					let dummy;
+					wdocument.c("dummy", wnode => {
+						dummy = wnode;
+					});
+					dummy.node.innerHTML = text;
+					let template = wdocument.wrap(dummy.node).wnodes[0];
+					((renderer.translator ||= {})[ns] ||= {})[tag] = class extends TemplateComponent {
+						static {
+							cutil.extend(this.prototype, {template});
+						}
+					};
+				}
+			}
+		}
+		dir(folder, "");
 	}
 }
 
