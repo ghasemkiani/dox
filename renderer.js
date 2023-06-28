@@ -37,11 +37,11 @@ class Renderer extends cutil.mixin(Obj, pubsub) {
 	set wnodeRoot(wnodeRoot) {
 		this._wnodeRoot = wnodeRoot;
 	}
-	render(wnode) {
+	async toRender(wnode) {
 		let context = this.createContext();
 		this.setupContext(context);
 		let component = this.translate(wnode, context);
-		component.render(this.wnodeRoot);
+		await component.toRender(this.wnodeRoot);
 		// this.iter();
 		return context;
 	}

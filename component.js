@@ -13,19 +13,19 @@ class Component extends cutil.mixin(Obj, pubsub) {
 	get wdocument() {
 		return this.wnode.wdocument;
 	}
-	render(wnode) {
+	async toRender(wnode) {
 		//
 	}
-	renderBody(wnode, f) {
+	async toRenderBody(wnode, f) {
 		let ctx = this.context.createChild();
 		if(typeof f === "function") {
 			f(ctx);
 		}
 		for(let wn of this.wnode.wnodes) {
-			this.context.renderer.translate(wn, ctx).render(wnode);
+			await this.context.renderer.translate(wn, ctx).toRender(wnode);
 		}
 	}
-	renderAgain(wn, wnode, f) {
+	async toRenderAgain(wn, wnode, f) {
 		let ctx = this.context.createChild();
 		if(typeof f === "function") {
 			f(ctx);
@@ -34,7 +34,7 @@ class Component extends cutil.mixin(Obj, pubsub) {
 			wnode = wn.parent;
 			wn.del();
 		}
-		this.context.renderer.translate(wn, ctx).render(wnode);
+		await this.context.renderer.translate(wn, ctx).toRender(wnode);
 	}
 }
 
@@ -44,7 +44,7 @@ class TextComponent extends Component {
 			//
 		});
 	}
-	render(wnode) {
+	async toRender(wnode) {
 		if(this.context.renderText) {
 			this.context.renderText(wnode, this.wnode.text);
 		} else {
@@ -59,7 +59,7 @@ class CommentComponent extends Component {
 			//
 		});
 	}
-	render(wnode) {
+	async toRender(wnode) {
 		wnode.comment(this.wnode.text);
 	}
 }
@@ -70,13 +70,15 @@ class ElementComponent extends Component {
 			//
 		});
 	}
-	render(wnode) {
+	async toRender(wnode) {
+		let wn;
 		wnode.cx(this.wnode.name, this.wnode.ns, wnode => {
 			for(let k of this.wnode.node.getAttributeNames()) {
 				wnode.attr(k, this.wnode.attr(k));
 			}
-			this.renderBody(wnode);
+			wn = wnode;
 		});
+		await this.toRenderBody(wn);
 	}
 }
 
@@ -87,20 +89,22 @@ class TemplateComponent extends Component {
 			props: null,
 		});
 	}
-	render(wnode) {
+	async toRender(wnode) {
 		let component = this;
 		let {template} = component;
 		let {context} = component;
 		let {renderer} = context;
 		
-		context.templateComponent = component;
 		
 		let cmp = renderer.translate(template, context);
 		component.props = {};
 		for (let {name, value} of component.wnode.attrs()) {
-			if (/^{/.test(value)) {
-				let f = new Function("wnode", "component", "context", "renderer", `return (${value});`);
-				value = f.call(cmp, wnode, cmp, context, renderer);
+			let checkCode = /^\s*{(.*)}\s*$/.exec(value);
+			if (checkCode) {
+				value = checkCode[1];
+				const AsyncFunction = async function () {}.constructor;
+				let f = new AsyncFunction ("wnode", "component", "context", "renderer", "templateComponent", "props", `return (${value});`);
+				value = await (f.call(cmp, wnode, cmp, context, renderer, component, component.props));
 			}
 			if (name === "wnode") {
 				wnode = value;
@@ -108,8 +112,8 @@ class TemplateComponent extends Component {
 				component.props[name] = value;
 			}
 		}
-		cmp.render(wnode);
-		
+		context.templateComponent = component;
+		await cmp.toRender(wnode);
 		delete context.templateComponent;
 	}
 }
