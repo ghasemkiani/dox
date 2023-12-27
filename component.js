@@ -72,7 +72,7 @@ class ElementComponent extends Component {
 	}
 	async toRender(wnode) {
 		let wn;
-		wnode.cx(this.wnode.name, this.wnode.ns, wnode => {
+		wnode.cx(this.wnode.tag, this.wnode.ns, wnode => {
 			for(let k of this.wnode.node.getAttributeNames()) {
 				wnode.attr(k, this.wnode.attr(k));
 			}
