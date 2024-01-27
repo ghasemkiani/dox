@@ -1,19 +1,20 @@
 {
 	"name": "@ghasemkiani/dox",
-	"version": "2.3.0",
+	"version": "2.3.1",
 	"description": "A simple document processor",
 	"type": "module",
 	"main": "index.js",
+	"exports": {
+		".": "./index.js"
+	},
 	"scripts": {
-		"test": "mocha"
+		"test": "node --test"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/ghasemkiani/dox.git"
 	},
 	"keywords": [
-		"javascript",
-		"node",
 		"xml",
 		"html",
 		"document",
@@ -28,6 +29,6 @@
 	"dependencies": {
 		"@ghasemkiani/base-utils": "github:ghasemkiani/base-utils",
 		"@ghasemkiani/base": "github:ghasemkiani/base",
-		"@ghasemkiani/wdom": "github:ghasemkiani/wdom"
+		"@ghasemkiani/xdom": "github:ghasemkiani/xdom"
 	}
 }

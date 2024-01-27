@@ -3,82 +3,70 @@
 import {cutil} from "@ghasemkiani/base";
 import {Obj} from "@ghasemkiani/base";
 import {pubsub} from "@ghasemkiani/base-utils";
+import {iwx} from "@ghasemkiani/xdom";
 
-class Component extends cutil.mixin(Obj, pubsub) {
+class Component extends cutil.mixin(Obj, pubsub, iwx) {
 	static {
 		cutil.extend(this.prototype, {
-			wnode: null,
+			node: null,
 		});
 	}
-	get wdocument() {
-		return this.wnode.wdocument;
+	get document() {
+		let {x} = this;
+		return x.doc(this.node);
 	}
-	async toRender(wnode) {
+	async toRender(node) {
 		//
 	}
-	async toRenderBody(wnode, f) {
+	async toRenderBody(node, f) {
+		let {x} = this;
 		let ctx = this.context.createChild();
 		if(typeof f === "function") {
 			f(ctx);
 		}
-		for(let wn of this.wnode.wnodes) {
-			await this.context.renderer.translate(wn, ctx).toRender(wnode);
+		for(let n of x.nodes(this.node)) {
+			await this.context.renderer.translate(n, ctx).toRender(node);
 		}
 	}
-	async toRenderAgain(wn, wnode, f) {
+	async toRenderAgain(n, node, f) {
+		let {x} = this;
 		let ctx = this.context.createChild();
 		if(typeof f === "function") {
 			f(ctx);
 		}
-		if(!wnode) {
-			wnode = wn.parent;
-			wn.del();
+		if(!node) {
+			node = x.pnode(n);
+			x.del(n);
 		}
-		await this.context.renderer.translate(wn, ctx).toRender(wnode);
+		await this.context.renderer.translate(n, ctx).toRender(node);
 	}
 }
 
 class TextComponent extends Component {
-	static {
-		cutil.extend(this.prototype, {
-			//
-		});
-	}
-	async toRender(wnode) {
+	async toRender(node) {
+		let {x} = this;
 		if(this.context.renderText) {
-			this.context.renderText(wnode, this.wnode.text);
+			this.context.renderText(node, this.node.data);
 		} else {
-			wnode.t(this.wnode.text);
+			x.t(node, this.node.data);
 		}
 	}
 }
 
 class CommentComponent extends Component {
-	static {
-		cutil.extend(this.prototype, {
-			//
-		});
-	}
-	async toRender(wnode) {
-		wnode.comment(this.wnode.text);
+	async toRender(node) {
+		let {x} = this;
+		x.comment(node, this.node.data);
 	}
 }
 
 class ElementComponent extends Component {
-	static {
-		cutil.extend(this.prototype, {
-			//
+	async toRender(node) {
+		let {x} = this;
+		let n = x.cx(node, x.name(this.node), x.ns(this.node), node => {
+			x.attrs(node, x.attrs(this.node));
 		});
-	}
-	async toRender(wnode) {
-		let wn;
-		wnode.cx(this.wnode.tag, this.wnode.ns, wnode => {
-			for(let k of this.wnode.node.getAttributeNames()) {
-				wnode.attr(k, this.wnode.attr(k));
-			}
-			wn = wnode;
-		});
-		await this.toRenderBody(wn);
+		await this.toRenderBody(n);
 	}
 }
 
@@ -89,8 +77,9 @@ class TemplateComponent extends Component {
 			props: null,
 		});
 	}
-	async toRender(wnode) {
+	async toRender(node) {
 		let component = this;
+		let {x} = component;
 		let {template} = component;
 		let {context} = component;
 		let {renderer} = context;
@@ -98,22 +87,22 @@ class TemplateComponent extends Component {
 		
 		let cmp = renderer.translate(template, context);
 		component.props = {};
-		for (let {name, value} of component.wnode.attrs()) {
-			let checkCode = /^\s*{(.*)}\s*$/.exec(value);
+		for (let [k, v] of x.attrs(component.node)) {
+			let checkCode = /^\s*{(.*)}\s*$/.exec(v);
 			if (checkCode) {
-				value = checkCode[1];
+				v = checkCode[1];
 				const AsyncFunction = async function () {}.constructor;
-				let f = new AsyncFunction ("wnode", "component", "context", "renderer", "templateComponent", "props", `return (${value});`);
-				value = await (f.call(cmp, wnode, cmp, context, renderer, component, component.props));
+				let f = new AsyncFunction ("node", "component", "context", "renderer", "templateComponent", "props", `return (${v});`);
+				v = await (f.call(cmp, node, cmp, context, renderer, component, component.props));
 			}
-			if (name === "wnode") {
-				wnode = value;
+			if (k === "node") {
+				node = v;
 			} else {
-				component.props[name] = value;
+				component.props[k] = v;
 			}
 		}
 		context.templateComponent = component;
-		await cmp.toRender(wnode);
+		await cmp.toRender(node);
 		delete context.templateComponent;
 	}
 }

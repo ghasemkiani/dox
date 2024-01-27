@@ -6,42 +6,37 @@ import fs from "node:fs";
 import {cutil} from "@ghasemkiani/base";
 import {Obj} from "@ghasemkiani/base";
 import {pubsub} from "@ghasemkiani/base-utils";
-import {WDocument} from "@ghasemkiani/wdom";
+import {iwx} from "@ghasemkiani/xdom";
 import {Component, TextComponent, CommentComponent, ElementComponent, TemplateComponent} from "./component.js";
 import {Context} from "./context.js";
 
-class Renderer extends cutil.mixin(Obj, pubsub) {
+class Renderer extends cutil.mixin(Obj, pubsub, iwx) {
 	static {
 		cutil.extend(this.prototype, {
 			translator: null,
-			_wdocument: null,
-			_Context: null,
-			_wnodeRoot: null,
+			Context: null,
+			_nroot: null,
 		});
 	}
-	createWDocument() {
-		return new WDocument();
-	}
-	get wdocument() {
-		if(!this._wdocument) {
-			this._wdocument = this.createWDocument();
+	get nroot() {
+		if (cutil.na(this._nroot)) {
+			let {x} = this;
+			let document = x.doc();
+			if (cutil.a(document)) {
+				x.cl(document);
+				this._nroot = x.root(document);
+			}
 		}
-		return this._wdocument;
+		return this._nroot;
 	}
-	set wdocument(wdocument) {
-		this._wdocument = wdocument;
+	set nroot(nroot) {
+		this._nroot = nroot;
 	}
-	get wnodeRoot() {
-		return this._wnodeRoot || (this.wdocument ? this.wdocument.root.cl() : null);
-	}
-	set wnodeRoot(wnodeRoot) {
-		this._wnodeRoot = wnodeRoot;
-	}
-	async toRender(wnode) {
+	async toRender(node) {
 		let context = this.createContext();
 		this.setupContext(context);
-		let component = this.translate(wnode, context);
-		await component.toRender(this.wnodeRoot);
+		let component = this.translate(node, context);
+		await component.toRender(this.nroot);
 		// this.iter();
 		return context;
 	}
@@ -54,34 +49,27 @@ class Renderer extends cutil.mixin(Obj, pubsub) {
 		this.pub("iter5");
 		this.pub("iter-finish");
 	}
-	getComponent(wnode) {
+	getComponent(node) {
+		let {x} = this;
 		return (
-			wnode?.kind === "text" ? TextComponent :
-			wnode?.kind === "comment" ? CommentComponent :
-			wnode?.kind === "element" ?
-				this.translator && wnode.ns in this.translator && wnode.name in this.translator[wnode.ns] ?
-					this.translator[wnode.ns][wnode.name] :
-					this.getElementComponent(wnode)
+			x.kind(node) === "text" ? TextComponent :
+			x.kind(node) === "comment" ? CommentComponent :
+			x.kind(node) === "element" ?
+				this.translator && x.ns(node) in this.translator && node.name in this.translator[x.ns(node)] ?
+					this.translator[x.ns(node)][node.name] :
+					this.getElementComponent(node)
 			: Component
 		);
 	}
-	getElementComponent(wnode) {
+	getElementComponent(node) {
 		return ElementComponent;
 	}
-	translate(wnode, context) {
-		let Component = this.getComponent(wnode);
-		let component = new Component({wnode, context});
+	translate(node, context) {
+		let {x} = this;
+		let Component = this.getComponent(node);
+		let component = new Component({node, context, x});
 		context.component = component;
 		return component;
-	}
-	get Context() {
-		if(!this._Context) {
-			this._Context = Context;
-		}
-		return this._Context;
-	}
-	set Context(Context) {
-		this._Context = Context;
 	}
 	createContext() {
 		let renderer = this;
@@ -94,7 +82,7 @@ class Renderer extends cutil.mixin(Obj, pubsub) {
 	}
 	addTemplateFolder(folder, ns) {
 		let renderer = this;
-		let {wdocument} = renderer;
+		let {x} = renderer;
 		function dir(folder, prefix) {
 			for (let dirent of fs.readdirSync(folder, {withFileTypes: true})) {
 				let fn = path.join(dirent.path, dirent.name);
@@ -104,12 +92,7 @@ class Renderer extends cutil.mixin(Obj, pubsub) {
 				} else if (dirent.isFile() && /\.dox/i.test(fn)) {
 					console.log(`${tag.padEnd(32)}\t${fn}`);
 					let text = fs.readFileSync(fn, "UTF-8");
-					let dummy;
-					wdocument.c("dummy", wnode => {
-						dummy = wnode;
-					});
-					dummy.node.innerHTML = text;
-					let template = wdocument.wrap(dummy.node).wnodes[0];
+					let template = x.root(x.fromStr(text));
 					((renderer.translator ||= {})[ns] ||= {})[tag] = class extends TemplateComponent {
 						static {
 							cutil.extend(this.prototype, {template});
