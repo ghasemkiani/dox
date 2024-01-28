@@ -15,7 +15,7 @@ class Context extends cutil.mixin(Obj, pubsub) {
 	createChild() {
 		return Object.create(this);
 	}
-	renderText(node, text) {
+	async toRenderText(node, text) {
 		this.renderer.x.t(node, text);
 	}
 }

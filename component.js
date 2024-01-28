@@ -41,10 +41,11 @@ class Component extends cutil.mixin(Obj, pubsub, iwx) {
 class TextComponent extends Component {
 	async toRender(node) {
 		let {x} = this;
-		if(this.context.renderText) {
-			this.context.renderText(node, this.node.data);
+		let text = this.node.data;
+		if(this.context.toRenderText) {
+			await this.context.toRenderText(node, text);
 		} else {
-			x.t(node, this.node.data);
+			x.t(node, text);
 		}
 	}
 }
