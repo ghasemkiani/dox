@@ -15,29 +15,17 @@ class Renderer extends cutil.mixin(Obj, pubsub, iwx) {
 		cutil.extend(this.prototype, {
 			translator: null,
 			Context: null,
-			_nroot: null,
 		});
 	}
-	get nroot() {
-		if (cutil.na(this._nroot)) {
-			let {x} = this;
-			let document = x.doc();
-			if (cutil.a(document)) {
-				x.cl(document);
-				this._nroot = x.root(document);
-			}
-		}
-		return this._nroot;
-	}
-	set nroot(nroot) {
-		this._nroot = nroot;
-	}
 	async toRender(node) {
-		let context = this.createContext();
-		this.setupContext(context);
-		let component = this.translate(node, context);
-		await component.toRender(this.nroot);
-		// this.iter();
+		let renderer = this;
+		let {x} = renderer;
+		x.cl(x.root());
+		let context = renderer.createContext();
+		renderer.setupContext(context);
+		let component = renderer.translate(node, context);
+		await component.toRender(x.root());
+		// renderer.iter();
 		return context;
 	}
 	iter() {
@@ -55,8 +43,8 @@ class Renderer extends cutil.mixin(Obj, pubsub, iwx) {
 			x.kind(node) === "text" ? TextComponent :
 			x.kind(node) === "comment" ? CommentComponent :
 			x.kind(node) === "element" ?
-				this.translator && x.ns(node) in this.translator && node.name in this.translator[x.ns(node)] ?
-					this.translator[x.ns(node)][node.name] :
+				this.translator && x.ns(node) in this.translator && x.nm(node) in this.translator[x.ns(node)] ?
+					this.translator[x.ns(node)][x.nm(node)] :
 					this.getElementComponent(node)
 			: Component
 		);

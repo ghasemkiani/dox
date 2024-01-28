@@ -11,10 +11,6 @@ class Component extends cutil.mixin(Obj, pubsub, iwx) {
 			node: null,
 		});
 	}
-	get document() {
-		let {x} = this;
-		return x.doc(this.node);
-	}
 	async toRender(node) {
 		//
 	}
