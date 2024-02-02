@@ -1,5 +1,3 @@
-//	@ghasemkiani/dox/renderer
-
 import path from "node:path";
 import fs from "node:fs";
 
@@ -17,14 +15,21 @@ class Renderer extends cutil.mixin(Obj, pubsub, iwx) {
 			Context: null,
 		});
 	}
+	async toPrepareDocument() {
+		let renderer = this;
+		let {x} = renderer;
+		let root = x.root();
+		x.cl(root);
+		return root;
+	}
 	async toRender(node) {
 		let renderer = this;
 		let {x} = renderer;
-		x.cl(x.root());
+		let root = await renderer.toPrepareDocument();
 		let context = renderer.createContext();
 		renderer.setupContext(context);
 		let component = renderer.translate(node, context);
-		await component.toRender(x.root());
+		await component.toRender(root);
 		// renderer.iter();
 		return context;
 	}
