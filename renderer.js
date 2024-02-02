@@ -3,6 +3,7 @@ import fs from "node:fs";
 
 import {cutil} from "@ghasemkiani/base";
 import {Obj} from "@ghasemkiani/base";
+import {Textual} from "@ghasemkiani/base";
 import {pubsub} from "@ghasemkiani/base-utils";
 import {iwx} from "@ghasemkiani/xdom";
 import {Component, TextComponent, CommentComponent, ElementComponent, TemplateComponent} from "./component.js";
@@ -73,7 +74,7 @@ class Renderer extends cutil.mixin(Obj, pubsub, iwx) {
 	setupContext(context) {
 		//
 	}
-	addTemplateFolder(folder, ns) {
+	addTemplateFolder(ns, folder, cs = "UTF-8") {
 		let renderer = this;
 		let {x} = renderer;
 		function dir(folder, prefix) {
@@ -83,9 +84,7 @@ class Renderer extends cutil.mixin(Obj, pubsub, iwx) {
 				if (dirent.isDirectory()) {
 					dir(fn, tag + ".");
 				} else if (dirent.isFile() && /\.dox/i.test(fn)) {
-					console.log(`${tag.padEnd(32)}\t${fn}`);
-					let text = fs.readFileSync(fn, "UTF-8");
-					let template = x.root(x.fromStr(text));
+					let template = x.root(x.fromStr(new Textual({fn, cs}).read().string));
 					((renderer.translator ||= {})[ns] ||= {})[tag] = class extends TemplateComponent {
 						static {
 							cutil.extend(this.prototype, {template});
