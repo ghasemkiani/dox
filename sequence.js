@@ -1,9 +1,15 @@
-//	@ghasemkiani/dox/context/sequence
-
 import {cutil} from "@ghasemkiani/base";
-import {Obj as Base} from "@ghasemkiani/base";
+import {Obj} from "@ghasemkiani/base";
 
-class Item extends Base {
+class Item extends Obj {
+	static {
+		cutil.extend(this.prototype, {
+			_id: null,
+			sequence: null,
+			nonum: false,
+			num: null,
+		});
+	}
 	constructor(...args) {
 		super(...args);
 		if (!this.nonum) {
@@ -29,14 +35,8 @@ class Item extends Base {
 		return this.sequence.items.indexOf(this);
 	}
 }
-cutil.extend(Item.prototype, {
-	_id: null,
-	sequence: null,
-	nonum: false,
-	num: null,
-});
 
-class Sequence extends Base {
+class Sequence extends Obj {
 	static {
 		cutil.extend(this.prototype, {
 			context: null,
