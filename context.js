@@ -14,7 +14,7 @@ class Context extends cutil.mixin(Obj, pubsub) {
 	}
 	createChild(f) {
 		let ctx = Object.create(this);
-		if (f) {
+		if (typeof f === "function") {
 			f(ctx);
 		}
 		return ctx;

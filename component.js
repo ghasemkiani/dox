@@ -22,10 +22,7 @@ class Component extends cutil.mixin(Obj, pubsub, iwx) {
 	}
 	async toRenderBody(node, f) {
 		let {x} = this;
-		let ctx = this.context.createChild();
-		if(typeof f === "function") {
-			f(ctx);
-		}
+		let ctx = this.context.createChild(f);
 		await this.toRenderBodyWith(node, ctx);
 	}
 	async toRenderAgain(n, node, f) {
