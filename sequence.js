@@ -37,6 +37,19 @@ cutil.extend(Item.prototype, {
 });
 
 class Sequence extends Base {
+	static {
+		cutil.extend(this.prototype, {
+			context: null,
+			tag : "item",
+			ftag : "Item",
+			_items : null,
+			num : 0,
+			_idMap : null,
+			parent: null,
+			level: 0,
+			idPadLength: 3,
+		});
+	}
 	get items() {
 		if(!this._items) {
 			this._items = [];
@@ -105,16 +118,5 @@ class Sequence extends Base {
 		return this.items.forEach(f);
 	}
 }
-cutil.extend(Sequence.prototype, {
-	context: null,
-	tag : "item",
-	ftag : "Item",
-	_items : null,
-	num : 0,
-	_idMap : null,
-	parent: null,
-	level: 0,
-	idPadLength: 3,
-});
 
 export {Item, Sequence};
