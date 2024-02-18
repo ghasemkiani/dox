@@ -14,15 +14,19 @@ class Component extends cutil.mixin(Obj, pubsub, iwx) {
 	async toRender(node) {
 		//
 	}
+	async toRenderBodyWith(node, ctx) {
+		let {x} = this;
+		for(let n of x.nodes(this.node)) {
+			await ctx.renderer.translate(n, ctx).toRender(node);
+		}
+	}
 	async toRenderBody(node, f) {
 		let {x} = this;
 		let ctx = this.context.createChild();
 		if(typeof f === "function") {
 			f(ctx);
 		}
-		for(let n of x.nodes(this.node)) {
-			await this.context.renderer.translate(n, ctx).toRender(node);
-		}
+		await this.toRenderBodyWith(node, ctx);
 	}
 	async toRenderAgain(n, node, f) {
 		let {x} = this;
