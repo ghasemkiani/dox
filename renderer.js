@@ -23,12 +23,14 @@ class Renderer extends cutil.mixin(Obj, pubsub, iwx) {
 		x.cl(root);
 		return root;
 	}
-	async toRender(node) {
+	async toRender(node, context) {
 		let renderer = this;
 		let {x} = renderer;
 		let root = await renderer.toPrepareDocument();
-		let context = renderer.createContext();
-		renderer.setupContext(context);
+		if (cutil.na(context)) {
+			context = renderer.createContext();
+			renderer.setupContext(context);
+		}
 		let component = renderer.translate(node, context);
 		await component.toRender(root);
 		// renderer.iter();

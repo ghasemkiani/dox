@@ -9,7 +9,11 @@ class Component extends cutil.mixin(Obj, pubsub, iwx) {
 	static {
 		cutil.extend(this.prototype, {
 			node: null,
+			context: null,
 		});
+	}
+	get parent() {
+		return this.context?.component;
 	}
 	async toRender(node) {
 		//
@@ -91,7 +95,12 @@ class TemplateComponent extends Component {
 				v = checkCode[1];
 				const AsyncFunction = async function () {}.constructor;
 				let f = new AsyncFunction ("node", "component", "context", "renderer", "templateComponent", "props", `return (${v});`);
-				v = await (f.call(cmp, node, cmp, context, renderer, component, component.props));
+				try {
+					v = await (f.call(cmp, node, cmp, context, renderer, component, component.props));
+				} catch (e) {
+					console.log(renderer.x.toStr(component.node));
+					throw e;
+				}
 			}
 			if (k === "node") {
 				node = v;

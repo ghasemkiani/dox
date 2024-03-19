@@ -5,15 +5,22 @@ import {Obj} from "@ghasemkiani/base";
 import {pubsub} from "@ghasemkiani/base-utils";
 
 class Context extends cutil.mixin(Obj, pubsub) {
-	constructor(...args) {
-		super(...args);
-		this.root = this;
+	static {
+		cutil.extend(this.prototype, {
+			renderer: null,
+			component: null,
+			parent: null,
+		});
 	}
-	get parent() {
-		return Object.getPrototypeOf(this);
+	get root() {
+		return this.parent?.root || this;
+	}
+	get parentComponent() {
+		return this.parent?.component;
 	}
 	createChild(f) {
 		let ctx = Object.create(this);
+		ctx.parent = this;
 		if (typeof f === "function") {
 			f(ctx);
 		}
