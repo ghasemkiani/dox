@@ -13,7 +13,7 @@ class Component extends cutil.mixin(Obj, pubsub, iwx) {
 		});
 	}
 	get parent() {
-		return this.context?.component;
+		return this.context?.parentComponent;
 	}
 	async toRender(node) {
 		//
@@ -31,10 +31,7 @@ class Component extends cutil.mixin(Obj, pubsub, iwx) {
 	}
 	async toRenderAgain(n, node, f) {
 		let {x} = this;
-		let ctx = this.context.createChild();
-		if(typeof f === "function") {
-			f(ctx);
-		}
+		let ctx = this.context.createChild(f);
 		if(!node) {
 			node = x.pnode(n);
 			x.del(n);
