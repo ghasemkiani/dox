@@ -1,5 +1,3 @@
-//	@ghasemkiani/dox/component
-
 import { cutil } from "@ghasemkiani/base";
 import { Obj } from "@ghasemkiani/base";
 import { pubsub } from "@ghasemkiani/base-utils";
@@ -38,6 +36,32 @@ class Component extends cutil.mixin(Obj, pubsub, iwx) {
     }
     await this.context.renderer.translate(n, ctx).toRender(node);
   }
+  async toGetAttr(name, node) {
+    let component = this;
+    let { x } = component;
+    let { context } = component;
+    let { renderer } = context;
+    let value = x.attr(component.node, name);
+    let checkCode = /^\s*{(.*)}\s*$/.exec(value);
+    if (checkCode) {
+      value = checkCode[1];
+      const AsyncFunction = async function () {}.constructor;
+      let f = new AsyncFunction(
+        "node",
+        "component",
+        "context",
+        "renderer",
+        `return (${value});`,
+      );
+      try {
+        value = await f.call(component, node, component, context, renderer);
+      } catch (e) {
+        console.log(renderer.x.toStr(component.node));
+        throw e;
+      }
+    }
+    return value;
+  }
 }
 
 class TextComponent extends Component {
@@ -66,32 +90,6 @@ class ElementComponent extends Component {
       x.attrs(node, x.attrs(this.node));
     });
     await this.toRenderBody(n);
-  }
-  async toGetAttr(name, node) {
-    let component = this;
-    let { x } = component;
-    let { context } = component;
-    let { renderer } = context;
-    let value = x.attr(component.node, name);
-    let checkCode = /^\s*{(.*)}\s*$/.exec(value);
-    if (checkCode) {
-      value = checkCode[1];
-      const AsyncFunction = async function () {}.constructor;
-      let f = new AsyncFunction(
-        "node",
-        "component",
-        "context",
-        "renderer",
-        `return (${value});`,
-      );
-      try {
-        value = await f.call(component, node, component, context, renderer);
-      } catch (e) {
-        console.log(renderer.x.toStr(component.node));
-        throw e;
-      }
-    }
-    return value;
   }
 }
 
